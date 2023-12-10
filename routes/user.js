@@ -1,4 +1,5 @@
 const router = require('express').Router();
+let bcrypt = require('bcryptjs');
 let User = require('../models/user.model');
 
 router.route('/').get((req, res) => {
@@ -7,11 +8,10 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/add').post((req, res) => {
-  console.log('hhhhhhh')
+router.route('/add').post(async (req, res) => {
   const email = req.body.email;
-  const password = req.body.password;
-  const name = req.body.password;;
+  const password = await bcrypt.hash(req.body.password, 12);
+  const name = req.body.name;;
 
   const newUser = new User({
     email,
@@ -40,7 +40,7 @@ router.route('/update/:id').post((req, res) => {
   User.findById(req.params.id)
     .then(User => {
       User.email = req.body.email;
-      User.password = req.body.password;
+      User.password = bcrypt.hash(req.body.password);
       User.name = req.body.name;
 
       User.save()
@@ -50,9 +50,9 @@ router.route('/update/:id').post((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/login').post((req, res) => {
+router.route('/login').post(async (req, res) => {
   const email = req.body.email;
-  const password = req.body.password;
+  const password = await bcrypt.hash(req.body.password, 12);
 
  User.findOne({email,password})
   .then((User) => {
