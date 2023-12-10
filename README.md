@@ -10,6 +10,8 @@ Node crud  service running under node
 - add your database "Nodedb"
 - create your collection "Users"
 
+# create .env file
+- add ATLAS_URI from mongo website
 
 ## The tutorial for creationg this app
 
