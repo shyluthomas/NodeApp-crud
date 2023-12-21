@@ -46,7 +46,7 @@ router.route('/update/:id').post((req, res) => {
   User.findById(req.params.id)
     .then(User => {
       User.email = req.body.email;
-      User.password = bcrypt.hash(req.body.password);
+      User.password = bcrypt.hash(req.body.password,12);
       User.name = req.body.name;
 
       User.save()
@@ -60,10 +60,14 @@ router.route('/login').post(async (req, res) => {
   const email = req.body.email;
   const password = await bcrypt.hash(req.body.password, 12);
 
- User.findOne({email,password})
+ User.findOne({email})
   .then((User) => {
     if(User) {
-      res.status(200).json(User)
+      const valid = bcrypt.compare(password, User.password);
+      if (valid)
+        res.status(200).json(User)
+      else 
+      res.status(401);
     } else {
       res.status(401);
     }
