@@ -19,6 +19,12 @@ router.route('/add').post(async (req, res) => {
     name,
   });
 
+  const oldUser = User.findOne({email: email});
+
+  if (oldUser) {
+    return res.status(409).send("User Already Exist. Please Login");
+  }
+
   newUser.save()
   .then(() => res.json('User added!'))
   .catch(err => res.status(400).json('Error: ' + err));
@@ -56,7 +62,12 @@ router.route('/login').post(async (req, res) => {
 
  User.findOne({email,password})
   .then((User) => {
-      res.status(200).json('Login sucessfull')
+    if(User) {
+      res.status(200).json(User)
+    } else {
+      res.status(401);
+    }
+     
   }).catch(err => res.status(401).json('Unauthorised : '+err))
 
   
